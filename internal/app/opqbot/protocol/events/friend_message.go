@@ -2,9 +2,7 @@ package events
 
 import (
 	onebot "HappyOPQ/internal/app/onebot/protocol/events"
-	"HappyOPQ/internal/pkg/richtext"
-	"HappyOPQ/pkg/log"
-	"encoding/json"
+	"HappyOPQ/internal/app/richtext"
 	"time"
 )
 
@@ -27,7 +25,7 @@ type FriendMessage struct {
 	CurrentQQ     int64               `json:"CurrentQQ"`
 }
 
-func (msg *FriendMessage) Bytes() []byte {
+func (msg *FriendMessage) Convert() (int64, interface{}) {
 	cqMsg := richtext.OPQCode2CQCode(msg.CurrentPacket.Data.Content)
 	var subType string
 	if msg.CurrentPacket.Data.MsgType == "TextMsg" {
@@ -37,32 +35,22 @@ func (msg *FriendMessage) Bytes() []byte {
 	} else {
 		subType = "other"
 	}
-	msg2 := onebot.FriendMessage{
-		Message: onebot.Message{
-			Time:        time.Now().UnixNano(),
-			SelfId:      msg.CurrentQQ,
-			PostType:    "message",
-			MessageType: "private",
-			SubType:     subType,
-			MessageId:   int32(msg.CurrentPacket.Data.MsgSeq),
-			UserId:      msg.CurrentPacket.Data.FromUin,
-			Message:     richtext.RemoveCQCode(cqMsg),
-			RawMessage:  cqMsg,
-			Font:        0,
-			Sender: onebot.FriendMessageSender{
-				MessageSender: onebot.MessageSender{
-					UserId:   msg.CurrentPacket.Data.FromUin,
-					Nickname: "",
-					Sex:      "unknown",
-					Age:      0,
-				},
-			},
+	return msg.CurrentQQ, onebot.FriendMessage{
+		Time:        time.Now().Unix(),
+		SelfId:      msg.CurrentQQ,
+		PostType:    "message",
+		MessageType: "private",
+		SubType:     subType,
+		MessageId:   int32(msg.CurrentPacket.Data.MsgSeq),
+		UserId:      msg.CurrentPacket.Data.FromUin,
+		Message:     richtext.RemoveCQCode(cqMsg),
+		RawMessage:  cqMsg,
+		Font:        0,
+		Sender: onebot.FriendMessageSender{
+			UserId:   msg.CurrentPacket.Data.FromUin,
+			Nickname: "",
+			Sex:      "unknown",
+			Age:      0,
 		},
 	}
-	bytes, err := json.Marshal(msg2)
-	if err != nil {
-		log.Error("转换消息格式时发生错误：", err)
-		return nil
-	}
-	return bytes
 }

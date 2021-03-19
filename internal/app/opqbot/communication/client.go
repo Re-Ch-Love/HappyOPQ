@@ -8,22 +8,26 @@ import (
 	"github.com/graarh/golang-socketio/transport"
 )
 
-func Connect(host string, port int, eventCh chan<- common.Convertible) *sio.Client {
+func Connect(host string, port int, eventCh chan<- common.Convertible, flagCh chan<- int) *sio.Client {
 	client, err := sio.Dial(
 		sio.GetUrl(host, port, false),
 		transport.GetDefaultWebsocketTransport(),
 	)
 	if err != nil {
-		panic(err)
+		log.Error("无法与 OPQBot 连接，因为：", err)
+		flagCh <- ConnectionTerminate
 	}
 	_ = client.On(sio.OnConnection, func(c *sio.Channel) {
-		log.Info("成功与 OPQBotConfig 连接，ID 为", client.Id())
+		log.Info("成功与 OPQBot 连接，ID 为", client.Id())
+		flagCh <- ConnectionSucceed
 	})
 	_ = client.On(sio.OnDisconnection, func(c *sio.Channel) {
-		log.Info("与 OPQBotConfig 断开连接")
+		log.Error("与 OPQBot 断开连接")
+		flagCh <- ConnectionTerminate
 	})
 	_ = client.On(sio.OnError, func(c *sio.Channel) {
-		log.Error("与 OPQBotConfig 的连接发生错误")
+		log.Error("与 OPQBot 的连接发生错误")
+		flagCh <- ConnectionTerminate
 	})
 	_ = client.On("OnFriendMsgs", func(conn *sio.Channel, msg events.FriendMessage) {
 		log.InfoF("收到 OnFriendMsgs 事件：%+v", msg)

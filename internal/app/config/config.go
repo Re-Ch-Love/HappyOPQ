@@ -1,7 +1,7 @@
 package config
 
 import (
-	"HappyOPQ/internal/pkg/constants"
+	"HappyOPQ/internal/app/constants"
 	"HappyOPQ/pkg/files"
 	"HappyOPQ/pkg/log"
 	"gopkg.in/yaml.v2"
