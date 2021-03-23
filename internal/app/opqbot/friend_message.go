@@ -1,4 +1,4 @@
-package events
+package opqbot
 
 import (
 	onebot "HappyOPQ/internal/app/onebot/protocol/events"

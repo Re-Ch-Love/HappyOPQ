@@ -1,4 +1,4 @@
-package events
+package opqbot
 
 import (
 	"HappyOPQ/pkg/log"
@@ -20,5 +20,5 @@ func TestFriendMessage_Report(t *testing.T) {
 		},
 		CurrentQQ: 0,
 	}
-	log.Debug(string(msg.Bytes()))
+	log.Debug(msg.Convert())
 }

@@ -1,4 +1,4 @@
-package communication
+package opqbot
 
 const (
 	ConnectionTerminate = iota + 1

@@ -1,4 +1,4 @@
-package communication
+package opqbot
 
 import (
 	"HappyOPQ/internal/app/common"
