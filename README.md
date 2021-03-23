@@ -68,5 +68,9 @@ OneBot:
 *注意：HappyOPQ 仍在初期开发时期，任何改动都不会预先通知，**请勿用于生产场景！***
 
 ## 鸣谢
+
+HappyOPQ的诞生离不开本项目以及下述依赖包的每一位贡献者！
+
 <https://github.com/graarh/golang-socketio>
+
 <https://gopkg.in/yaml.v2>
