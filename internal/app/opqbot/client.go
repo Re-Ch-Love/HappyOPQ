@@ -39,7 +39,7 @@ func NewCommunicator(conf *config.OPQBotConfig) *Communicator {
 		FlagChan:  make(chan int),
 		EventChan: make(chan common.Convertible),
 		client:    nil,
-		retry:     retry.Timed(3, 3),//todo
+		retry:     retry.Timed(3, 3), //todo
 	}
 	return c
 }
@@ -95,8 +95,6 @@ func (c *Communicator) recover() {
 		case ConnectionTerminate:
 			common.Must(c.retry.On(c.connect))
 			c.init()
-		case ConnectionSucceed:
-			log.Info("成功与 OPQBot 连接，ID 为", c.client.Id())
 		}
 	}
 }
