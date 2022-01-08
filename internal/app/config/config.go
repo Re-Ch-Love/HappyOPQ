@@ -9,8 +9,9 @@ import (
 )
 
 type OPQBotConfig struct {
-	Host string `yaml:"Host"`
-	Port int    `yaml:"Port"`
+	ExecPath string `yaml:"ExecPath"`
+	Host     string `yaml:"Host"`
+	Port     int    `yaml:"Port"`
 }
 
 type OneBotHTTPConfig struct {
@@ -43,8 +44,9 @@ type Config struct {
 
 var DefaultConfig = Config{
 	OPQBot: OPQBotConfig{
-		Host: "127.0.0.1",
-		Port: 8080,
+		ExecPath: "./OPQBot/OPQBot.exe",
+		Host:     "127.0.0.1",
+		Port:     8080,
 	},
 	OneBot: OneBotConfig{
 		HTTP: OneBotHTTPConfig{
