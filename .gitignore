@@ -1,3 +1,5 @@
 _temp
 .idea
 OPQBot
+# OPQBot产生的日志目录
+Logs

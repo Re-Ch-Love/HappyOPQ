@@ -4,11 +4,16 @@ import (
 	"HappyOPQ/internal/app/common"
 	"HappyOPQ/internal/app/common/retry"
 	"HappyOPQ/internal/app/config"
-	errors "HappyOPQ/pkg/common"
-	"HappyOPQ/pkg/log"
+	"HappyOPQ/pkg/utils"
 	sio "github.com/graarh/golang-socketio"
 	"github.com/graarh/golang-socketio/transport"
 )
+
+var logger = utils.NewDefaultLogger()
+
+func init() {
+	logger.Tag = "client"
+}
 
 const (
 	OnFriendMsgs = "OnFriendMsgs"
@@ -55,42 +60,42 @@ func (c *Communicator) connect() error {
 	return nil
 }
 func (c *Communicator) init() {
-	errors.Must(c.client.On(sio.OnConnection, func(_c *sio.Channel) {
-		log.Info("成功与 OPQBot 连接，ID 为", c.client.Id())
+	utils.Must(c.client.On(sio.OnConnection, func(_c *sio.Channel) {
+		logger.Info("成功与 OPQBot 连接，ID 为", c.client.Id())
 		c.FlagChan <- ConnectionSucceed
 	}))
 
-	errors.Must(c.client.On(sio.OnDisconnection, func(_c *sio.Channel) {
-		log.Error("与 OPQBot 断开连接")
+	utils.Must(c.client.On(sio.OnDisconnection, func(_c *sio.Channel) {
+		logger.Error("与 OPQBot 断开连接")
 		c.FlagChan <- ConnectionTerminate
 	}))
 
-	errors.Must(c.client.On(sio.OnError, func(_c *sio.Channel) {
-		log.Error("与 OPQBot 的连接发生错误")
+	utils.Must(c.client.On(sio.OnError, func(_c *sio.Channel) {
+		logger.Error("与 OPQBot 的连接发生错误")
 		c.FlagChan <- ConnectionTerminate
 	}))
 
-	errors.Must(c.client.On(OnFriendMsgs, func(conn *sio.Channel, msg FriendMessage) {
-		log.InfoF("收到 OnFriendMsgs 事件：%+v", msg)
+	utils.Must(c.client.On(OnFriendMsgs, func(conn *sio.Channel, msg FriendMessage) {
+		logger.Infof("收到 OnFriendMsgs 事件：%+v", msg)
 		c.EventChan <- &msg
 	}))
 
-	errors.Must(c.client.On(OnGroupMsgs, func(c *sio.Channel, msg interface{}) {
-		log.InfoF("收到 OnGroupMsgs 事件：%+v", msg)
+	utils.Must(c.client.On(OnGroupMsgs, func(c *sio.Channel, msg interface{}) {
+		logger.Infof("收到 OnGroupMsgs 事件：%+v", msg)
 	}))
 
-	errors.Must(c.client.On(OnEvents, func(conn *sio.Channel, msg interface{}) {
-		log.InfoF("收到 OnEvents 事件：%+v", msg)
+	utils.Must(c.client.On(OnEvents, func(conn *sio.Channel, msg interface{}) {
+		logger.Infof("收到 OnEvents 事件：%+v", msg)
 	}))
 }
 
 func (c *Communicator) Run(finishSignal chan struct{}) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Fatal(err)
+			logger.PanicErr(err)
 		}
 	}()
-	errors.Must(c.connect())
+	utils.Must(c.connect())
 	c.init()
 	finishSignal <- struct{}{}
 	close(finishSignal)
@@ -102,7 +107,7 @@ func (c *Communicator) handleFlags() {
 		f := <-c.FlagChan
 		switch f {
 		case ConnectionTerminate:
-			errors.Must(c.retry.On(c.connect))
+			utils.Must(c.retry.On(c.connect))
 			c.init()
 		}
 	}

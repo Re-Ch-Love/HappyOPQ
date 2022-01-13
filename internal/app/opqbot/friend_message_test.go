@@ -1,12 +1,11 @@
 package opqbot
 
 import (
-	"HappyOPQ/pkg/log"
 	"testing"
 )
 
 func TestFriendMessage_Report(t *testing.T) {
-	msg := FriendMessage{
+	_ = FriendMessage{
 		CurrentPacket: FriendMessagePacket{
 			WebConnID: "",
 			Data: FriendMessageData{
@@ -20,5 +19,5 @@ func TestFriendMessage_Report(t *testing.T) {
 		},
 		CurrentQQ: 0,
 	}
-	log.Debug(msg.Convert())
+	//logger.Debug(msg.Convert())
 }

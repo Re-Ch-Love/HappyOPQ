@@ -1,13 +1,12 @@
-package files
+package utils
 
 import (
-	"HappyOPQ/pkg/tests"
 	"os"
 	"testing"
 )
 
 func TestIsExist(t *testing.T) {
-	a := tests.Asserter{T: t}
+	a := Asserter{T: t}
 
 	err := os.Mkdir("a", os.ModePerm)
 	a.AssertEqual(err, nil, err)

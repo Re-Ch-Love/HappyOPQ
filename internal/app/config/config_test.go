@@ -1,13 +1,13 @@
 package config
 
 import (
-	"HappyOPQ/pkg/tests"
+	"HappyOPQ/pkg/utils"
 	"os"
 	"testing"
 )
 
 func TestLoadConfigCustom(t *testing.T) {
-	a := tests.Asserter{T: t}
+	a := utils.Asserter{T: t}
 	path := ".temp.yml"
 	config := `
 OPQBot:

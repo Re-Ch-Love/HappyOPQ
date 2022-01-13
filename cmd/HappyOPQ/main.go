@@ -4,12 +4,18 @@ import (
 	"HappyOPQ/internal/app/config"
 	onebotComm "HappyOPQ/internal/app/onebot/communication"
 	"HappyOPQ/internal/app/opqbot"
-	"HappyOPQ/pkg/log"
+	"HappyOPQ/pkg/utils"
 	"flag"
 	"os"
 	"os/exec"
 	"time"
 )
+
+var logger = utils.NewDefaultLogger()
+
+func init() {
+	logger.Tag = "main"
+}
 
 var configPath = flag.String("c", "./opq-onebot.yml", "配置文件的路径")
 
@@ -35,13 +41,13 @@ func main() {
 	defer func() {
 		err := cmd.Wait()
 		if err != nil {
-			log.Fatal(err)
+			logger.PanicErr(err)
 		}
 	}()
 	go func() {
 		err := cmd.Start()
 		if err != nil {
-			log.Fatal(err)
+			logger.PanicErr(err)
 		}
 	}()
 	// 与OPQBot建立连接
@@ -54,7 +60,7 @@ func main() {
 	// 与用户端建立连接
 	c := conf.OneBot
 	if c.HTTP.Enabled {
-		log.Info("使用 HTTP 与 OneBot 通信")
+		logger.Info("使用 HTTP 与 OneBot 通信")
 		communicator := onebotComm.HTTPCommunicator{URL: c.HTTP.URL}
 		// 阻塞
 		for {
@@ -64,10 +70,10 @@ func main() {
 	}
 	if c.PositiveWebSocket.Enabled {
 		// TODO
-		log.Info("抱歉，HappyOPQ 暂不支持使用正向 WebSocket 与 OneBot 通信")
+		logger.Info("抱歉，HappyOPQ 暂不支持使用正向 WebSocket 与 OneBot 通信")
 	}
 	if c.ReverseWebSocket.Enabled {
 		// TODO
-		log.Info("抱歉，HappyOPQ 暂不支持使用反向 WebSocket 与 OneBot 通信")
+		logger.Info("抱歉，HappyOPQ 暂不支持使用反向 WebSocket 与 OneBot 通信")
 	}
 }

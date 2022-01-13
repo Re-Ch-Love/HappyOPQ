@@ -2,11 +2,16 @@ package config
 
 import (
 	"HappyOPQ/internal/app/constants"
-	"HappyOPQ/pkg/files"
-	"HappyOPQ/pkg/log"
+	"HappyOPQ/pkg/utils"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
+
+var logger = utils.NewDefaultLogger()
+
+func init() {
+	logger.Tag = "config"
+}
 
 type OPQBotConfig struct {
 	ExecPath string `yaml:"ExecPath"`
@@ -67,35 +72,35 @@ var DefaultConfig = Config{
 }
 
 func LoadConfig(configPath string) Config {
-	if files.IsFileExist(configPath) {
+	if utils.IsFileExist(configPath) {
 		//configPath = configPath
-	} else if files.IsFileExist(constants.DefaultConfigFileName) {
+	} else if utils.IsFileExist(constants.DefaultConfigFileName) {
 		configPath = constants.DefaultConfigFileName
 	} else {
-		log.Info("未检测到自定义配置，将使用默认配置")
+		logger.Info("未检测到自定义配置，将使用默认配置")
 		out, err := yaml.Marshal(DefaultConfig)
-		log.InfoF("当前配置：\n%s", string(out))
+		logger.Infof("当前配置：\n%s", string(out))
 		if err != nil {
-			log.InfoF("当前配置：\n%+v", DefaultConfig)
+			logger.Infof("当前配置：\n%+v", DefaultConfig)
 		}
 		return DefaultConfig
 	}
 	// 自定义配置（自定义配置覆盖于默认配置之上，所以自定义配置可以不写全，没写的会用默认配置）
-	log.Info("正在加载自定义配置...")
+	logger.Info("正在加载自定义配置...")
 	conf := DefaultConfig
 	customConfigFile, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		log.Fatal("读取自定义配置文件时发生错误：", err)
+		logger.Fatal("读取自定义配置文件时发生错误：", err)
 	}
 	err = yaml.Unmarshal(customConfigFile, &conf)
 	if err != nil {
-		log.Fatal("反序列化默认配置文件时发生错误：", err)
+		logger.Fatal("反序列化默认配置文件时发生错误：", err)
 	}
-	log.Info("自定义配置加载完毕")
+	logger.Info("自定义配置加载完毕")
 	out, err := yaml.Marshal(conf)
-	log.InfoF("当前配置：\n%s", string(out))
+	logger.Infof("当前配置：\n%s", string(out))
 	if err != nil {
-		log.InfoF("当前配置：\n%+v", conf)
+		logger.Infof("当前配置：\n%+v", conf)
 	}
 	return conf
 }
